@@ -1,16 +1,10 @@
 version: 1
 frontend:
   phases:
-    preBuild:
-      commands:
-        - npm ci --legacy-peer-deps
     build:
       commands:
-        - npm run build
+        - echo "Static site, no build needed"
   artifacts:
-    baseDirectory: .next
+    baseDirectory: public
     files:
       - '**/*'
-  cache:
-    paths:
-      - node_modules/**/*
