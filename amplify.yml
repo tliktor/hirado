@@ -3,7 +3,7 @@ backend:
   phases:
     preBuild:
       commands:
-        - nvm use 18
+        - nvm install 18
         - npm ci
         - mkdir -p amplify/layers/sharp/nodejs
         - cd amplify/layers/sharp/nodejs && npm init -y && npm install --platform=linux --arch=x64 sharp@0.33.0
@@ -14,7 +14,7 @@ frontend:
   phases:
     preBuild:
       commands:
-        - nvm use 18
+        - nvm install 18
         - npm ci
     build:
       commands:
