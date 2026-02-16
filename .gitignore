@@ -27,3 +27,4 @@ dist-ssr
 amplify_outputs.json
 amplifyconfiguration.json
 .amplify/
+amplify/layers/

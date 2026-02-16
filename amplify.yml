@@ -1,6 +1,10 @@
 version: 1
 backend:
   phases:
+    preBuild:
+      commands:
+        - mkdir -p amplify/layers/sharp/nodejs
+        - cd amplify/layers/sharp/nodejs && npm init -y && npm install --platform=linux --arch=x64 sharp@0.33.0
     build:
       commands:
         - npm ci --cache .npm --prefer-offline
