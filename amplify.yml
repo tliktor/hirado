@@ -1,17 +1,10 @@
 version: 1
 frontend:
   phases:
-    preBuild:
-      commands:
-        - cd frontend
-        - npm ci
     build:
       commands:
-        - npm run build
+        - echo "Static site, no build needed"
   artifacts:
-    baseDirectory: frontend/.next
+    baseDirectory: public
     files:
       - '**/*'
-  cache:
-    paths:
-      - frontend/node_modules/**/*
