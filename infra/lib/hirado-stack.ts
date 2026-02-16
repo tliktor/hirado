@@ -114,9 +114,28 @@ export class HiradoStack extends cdk.Stack {
       resultsCacheTtl: cdk.Duration.minutes(5),
     });
 
+    // List Lambda (gallery)
+    const listLambda = new lambda.Function(this, 'ListLambda', {
+      functionName: 'hirado-list',
+      runtime: lambda.Runtime.NODEJS_22_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromAsset('../lambda/list'),
+      role: lambdaRole,
+      environment: {
+        BUCKET_NAME: bucket.bucketName,
+      },
+      timeout: cdk.Duration.seconds(30),
+    });
+
     // /upload endpoint
     const upload = api.root.addResource('upload');
     upload.addMethod('POST', new apigateway.LambdaIntegration(uploadLambda), {
+      authorizer,
+    });
+
+    // /list endpoint
+    const list = api.root.addResource('list');
+    list.addMethod('GET', new apigateway.LambdaIntegration(listLambda), {
       authorizer,
     });
 

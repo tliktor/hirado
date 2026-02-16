@@ -120,7 +120,21 @@ export default function Home() {
 
   return (
     <div style={{ padding: '2rem', maxWidth: '1200px', margin: '0 auto' }}>
-      <h1 style={{ marginBottom: '2rem' }}>Fotók és videók feltöltése</h1>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+        <h1 style={{ margin: 0 }}>Fotók és videók feltöltése</h1>
+        <a
+          href="/gallery"
+          style={{
+            padding: '0.5rem 1rem',
+            background: '#0070f3',
+            color: 'white',
+            textDecoration: 'none',
+            borderRadius: '4px',
+          }}
+        >
+          Galéria
+        </a>
+      </div>
       <Dashboard
         uppy={uppy}
         proudlyDisplayPoweredByUppy={false}

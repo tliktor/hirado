@@ -16,8 +16,10 @@
     "@uppy/react": "^4.0.4",
     "@uppy/status-bar": "^5.1.0",
     "next": "^15.1.6",
+    "photoswipe": "^5.4.4",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "react-photo-gallery": "^8.0.0"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
