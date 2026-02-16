@@ -1,0 +1,8 @@
+infra/
+lambda/
+tests/
+images/
+playwright-report/
+test-results/
+MEMORY_BANK.md
+instructions.md
