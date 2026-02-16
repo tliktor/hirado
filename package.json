@@ -1,17 +1,30 @@
 {
-  "name": "hirado",
+  "name": "hirado-frontend",
   "version": "1.0.0",
-  "description": "Hiradó - Photo upload and management system",
   "scripts": {
-    "test": "playwright test",
-    "test:ui": "playwright test --ui",
-    "test:headed": "playwright test --headed"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "dependencies": {
+    "@uppy/aws-s3": "^4.3.1",
+    "@uppy/core": "^4.3.2",
+    "@uppy/dashboard": "^4.2.1",
+    "@uppy/drag-drop": "^5.1.0",
+    "@uppy/file-input": "^4.2.2",
+    "@uppy/progress-bar": "^4.3.2",
+    "@uppy/react": "^4.0.4",
+    "@uppy/status-bar": "^5.1.0",
+    "next": "^15.1.6",
+    "photoswipe": "^5.4.4",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-photo-gallery": "^8.0.0"
+  },
   "devDependencies": {
-    "@playwright/test": "^1.49.1",
-    "playwright": "^1.49.1"
+    "@types/node": "^20.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "typescript": "^5.0.0"
   }
 }
