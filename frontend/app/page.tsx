@@ -21,7 +21,7 @@ export default function Home() {
     });
 
     uppyInstance.use(AwsS3, {
-      async getUploadParameters(file) {
+      getUploadParameters: async (file) => {
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/upload`, {
           method: 'POST',
           headers: {
@@ -43,11 +43,11 @@ export default function Home() {
           method: 'PUT',
           url: data.url,
           headers: {
-            'Content-Type': file.type,
+            'Content-Type': file.type || '',
           },
         };
       },
-    });
+    } as any);
 
     return uppyInstance;
   });
