@@ -1,27 +1,33 @@
 'use client';
 
 import { useState } from 'react';
-import Uppy from '@uppy/core';
-import { Dashboard } from '@uppy/react';
-import AwsS3 from '@uppy/aws-s3';
-
-import '@uppy/core/dist/style.min.css';
-import '@uppy/dashboard/dist/style.min.css';
 
 export default function Home() {
   const [password, setPassword] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [uppy] = useState(() => {
-    const uppyInstance = new Uppy({
-      restrictions: {
-        maxFileSize: 5 * 1024 * 1024 * 1024, // 5GB
-        allowedFileTypes: ['image/*', 'video/*'],
-      },
-      autoProceed: false,
-    });
+  const [files, setFiles] = useState<FileList | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [progress, setProgress] = useState(0);
 
-    uppyInstance.use(AwsS3, {
-      getUploadParameters: async (file: any) => {
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (password === process.env.NEXT_PUBLIC_PASSWORD) {
+      setIsAuthenticated(true);
+    } else {
+      alert('Hibás jelszó!');
+    }
+  };
+
+  const handleUpload = async () => {
+    if (!files) return;
+
+    setUploading(true);
+    const totalFiles = files.length;
+    let uploaded = 0;
+
+    for (const file of Array.from(files)) {
+      try {
+        // Get presigned URL
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/upload`, {
           method: 'POST',
           headers: {
@@ -34,31 +40,28 @@ export default function Home() {
           }),
         });
 
-        if (!response.ok) {
-          throw new Error('Failed to get upload URL');
-        }
-
         const data = await response.json();
-        return {
+
+        // Upload to S3
+        await fetch(data.url, {
           method: 'PUT',
-          url: data.url,
           headers: {
-            'Content-Type': file.type || '',
+            'Content-Type': file.type,
           },
-        };
-      },
-    } as any);
+          body: file,
+        });
 
-    return uppyInstance;
-  });
-
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (password === process.env.NEXT_PUBLIC_PASSWORD) {
-      setIsAuthenticated(true);
-    } else {
-      alert('Hibás jelszó!');
+        uploaded++;
+        setProgress(Math.round((uploaded / totalFiles) * 100));
+      } catch (error) {
+        console.error('Upload error:', error);
+      }
     }
+
+    setUploading(false);
+    setProgress(0);
+    setFiles(null);
+    alert('Feltöltés kész!');
   };
 
   if (!isAuthenticated) {
@@ -135,10 +138,63 @@ export default function Home() {
           Galéria
         </a>
       </div>
-      <Dashboard
-        uppy={uppy}
-        proudlyDisplayPoweredByUppy={false}
-      />
+
+      <div style={{
+        border: '2px dashed #ddd',
+        borderRadius: '8px',
+        padding: '3rem',
+        textAlign: 'center',
+        marginBottom: '2rem'
+      }}>
+        <input
+          type="file"
+          multiple
+          accept="image/*,video/*"
+          onChange={(e) => setFiles(e.target.files)}
+          style={{ marginBottom: '1rem' }}
+        />
+        
+        {files && (
+          <p>{files.length} fájl kiválasztva</p>
+        )}
+
+        {uploading && (
+          <div style={{ marginTop: '1rem' }}>
+            <div style={{
+              width: '100%',
+              height: '20px',
+              backgroundColor: '#f0f0f0',
+              borderRadius: '10px',
+              overflow: 'hidden'
+            }}>
+              <div style={{
+                width: `${progress}%`,
+                height: '100%',
+                backgroundColor: '#0070f3',
+                transition: 'width 0.3s'
+              }} />
+            </div>
+            <p>{progress}%</p>
+          </div>
+        )}
+
+        <button
+          onClick={handleUpload}
+          disabled={!files || uploading}
+          style={{
+            padding: '0.75rem 2rem',
+            background: files && !uploading ? '#0070f3' : '#ccc',
+            color: 'white',
+            border: 'none',
+            borderRadius: '4px',
+            fontSize: '1rem',
+            cursor: files && !uploading ? 'pointer' : 'not-allowed',
+            marginTop: '1rem'
+          }}
+        >
+          {uploading ? 'Feltöltés...' : 'Feltöltés'}
+        </button>
+      </div>
     </div>
   );
 }
