@@ -21,7 +21,7 @@ export default function Home() {
     });
 
     uppyInstance.use(AwsS3, {
-      getUploadParameters: async (file) => {
+      getUploadParameters: async (file: any) => {
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/upload`, {
           method: 'POST',
           headers: {
