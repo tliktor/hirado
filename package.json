@@ -1,0 +1,17 @@
+{
+  "name": "hirado",
+  "version": "1.0.0",
+  "description": "Hiradó - Photo upload and management system",
+  "scripts": {
+    "test": "playwright test",
+    "test:ui": "playwright test --ui",
+    "test:headed": "playwright test --headed"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.49.1",
+    "playwright": "^1.49.1"
+  }
+}
