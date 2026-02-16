@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hiradó - Fotó feltöltés</title>
+    <link href="https://cdn.jsdelivr.net/npm/@uppy/core@3.9.3/dist/style.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@uppy/dashboard@3.7.4/dist/style.min.css" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: system-ui, -apple-system, sans-serif; background: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+        .btn { padding: 0.75rem 1.5rem; background: #0070f3; color: white; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; display: inline-block; }
+        .btn:hover { background: #0051cc; }
+        .login-box { max-width: 400px; margin: 10vh auto; background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .login-box h1 { text-align: center; margin-bottom: 1rem; }
+        .login-box input { width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 1rem; font-size: 1rem; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-box">
+        <h1>🎯 Hiradó</h1>
+        <p style="text-align: center; color: #666; margin-bottom: 1.5rem;">Add meg a jelszót</p>
+        <input type="password" id="passwordInput" placeholder="Jelszó" />
+        <button class="btn" style="width: 100%;" onclick="login()">Belépés</button>
+    </div>
+
+    <!-- Upload Screen -->
+    <div id="uploadScreen" class="hidden">
+        <div class="container">
+            <div class="header">
+                <h1>📸 Fotók és videók feltöltése</h1>
+                <a href="gallery.html" class="btn">Galéria</a>
+            </div>
+            <div id="uppy"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@uppy/core@3.9.3/dist/uppy.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@uppy/dashboard@3.7.4/dist/uppy.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@uppy/aws-s3@3.5.3/dist/uppy.min.js"></script>
+
+    <script>
+        const API_URL = 'https://68cu0kah0h.execute-api.eu-central-1.amazonaws.com/prod';
+        const PASSWORD = 'k1cs1nyfalumban';
+
+        function login() {
+            const input = document.getElementById('passwordInput').value;
+            if (input === PASSWORD) {
+                localStorage.setItem('authenticated', 'true');
+                showUploadScreen();
+            } else {
+                alert('Hibás jelszó!');
+            }
+        }
+
+        function showUploadScreen() {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('uploadScreen').classList.remove('hidden');
+            initUppy();
+        }
+
+        function initUppy() {
+            const uppy = new Uppy.Core({
+                restrictions: {
+                    maxFileSize: 5 * 1024 * 1024 * 1024,
+                    allowedFileTypes: ['image/*', 'video/*']
+                },
+                autoProceed: false
+            });
+
+            uppy.use(Uppy.Dashboard, {
+                target: '#uppy',
+                inline: true,
+                height: 500,
+                proudlyDisplayPoweredByUppy: false
+            });
+
+            uppy.use(Uppy.AwsS3, {
+                async getUploadParameters(file) {
+                    const response = await fetch(`${API_URL}/upload`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': PASSWORD
+                        },
+                        body: JSON.stringify({
+                            fileName: file.name,
+                            fileType: file.type
+                        })
+                    });
+
+                    const data = await response.json();
+                    return {
+                        method: 'PUT',
+                        url: data.url,
+                        headers: {
+                            'Content-Type': file.type
+                        }
+                    };
+                }
+            });
+
+            uppy.on('complete', (result) => {
+                if (result.successful.length > 0) {
+                    alert(`${result.successful.length} fájl sikeresen feltöltve!`);
+                }
+            });
+        }
+
+        // Check if already authenticated
+        if (localStorage.getItem('authenticated') === 'true') {
+            showUploadScreen();
+        }
+    </script>
+</body>
+</html>

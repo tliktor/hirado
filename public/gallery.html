@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hiradó - Galéria</title>
+    <link href="https://cdn.jsdelivr.net/npm/photoswipe@5.4.3/dist/photoswipe.css" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: system-ui, -apple-system, sans-serif; background: #f5f5f5; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 2rem; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+        .btn { padding: 0.75rem 1.5rem; background: #0070f3; color: white; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; display: inline-block; }
+        .btn:hover { background: #0051cc; }
+        .filters { display: flex; gap: 1rem; margin-bottom: 2rem; }
+        .filters select { padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px; font-size: 1rem; }
+        .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem; }
+        .gallery-item { position: relative; cursor: pointer; overflow: hidden; border-radius: 8px; aspect-ratio: 1; }
+        .gallery-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
+        .gallery-item:hover img { transform: scale(1.05); }
+        .loading { text-align: center; padding: 3rem; color: #666; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📸 Galéria</h1>
+            <a href="index.html" class="btn">Feltöltés</a>
+        </div>
+
+        <div class="filters">
+            <select id="yearFilter" onchange="loadPhotos()">
+                <option value="">Minden év</option>
+            </select>
+            <select id="monthFilter" onchange="loadPhotos()">
+                <option value="">Minden hónap</option>
+                <option value="01">Január</option>
+                <option value="02">Február</option>
+                <option value="03">Március</option>
+                <option value="04">Április</option>
+                <option value="05">Május</option>
+                <option value="06">Június</option>
+                <option value="07">Július</option>
+                <option value="08">Augusztus</option>
+                <option value="09">Szeptember</option>
+                <option value="10">Október</option>
+                <option value="11">November</option>
+                <option value="12">December</option>
+            </select>
+        </div>
+
+        <div id="loading" class="loading">Betöltés...</div>
+        <div id="gallery" class="gallery"></div>
+    </div>
+
+    <script type="module">
+        import PhotoSwipeLightbox from 'https://cdn.jsdelivr.net/npm/photoswipe@5.4.3/dist/photoswipe-lightbox.esm.js';
+        import PhotoSwipe from 'https://cdn.jsdelivr.net/npm/photoswipe@5.4.3/dist/photoswipe.esm.js';
+
+        const API_URL = 'https://68cu0kah0h.execute-api.eu-central-1.amazonaws.com/prod';
+        const PASSWORD = 'k1cs1nyfalumban';
+
+        let lightbox;
+
+        async function loadPhotos() {
+            const year = document.getElementById('yearFilter').value;
+            const month = document.getElementById('monthFilter').value;
+            
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('gallery').innerHTML = '';
+
+            try {
+                const response = await fetch(`${API_URL}/list?year=${year}&month=${month}`, {
+                    headers: { 'Authorization': PASSWORD }
+                });
+
+                const data = await response.json();
+                
+                // Populate year filter
+                if (data.years && data.years.length > 0) {
+                    const yearFilter = document.getElementById('yearFilter');
+                    const currentYears = Array.from(yearFilter.options).map(o => o.value);
+                    data.years.forEach(y => {
+                        if (!currentYears.includes(y)) {
+                            const option = document.createElement('option');
+                            option.value = y;
+                            option.textContent = y;
+                            yearFilter.appendChild(option);
+                        }
+                    });
+                }
+
+                // Display photos
+                const gallery = document.getElementById('gallery');
+                if (data.photos && data.photos.length > 0) {
+                    data.photos.forEach((photo, index) => {
+                        const item = document.createElement('a');
+                        item.className = 'gallery-item';
+                        item.href = photo.src;
+                        item.dataset.pswpWidth = photo.width;
+                        item.dataset.pswpHeight = photo.height;
+                        
+                        const img = document.createElement('img');
+                        img.src = photo.src;
+                        img.alt = photo.key;
+                        
+                        item.appendChild(img);
+                        gallery.appendChild(item);
+                    });
+
+                    initLightbox();
+                } else {
+                    gallery.innerHTML = '<p style="text-align: center; color: #666;">Még nincsenek feltöltött képek</p>';
+                }
+            } catch (error) {
+                console.error('Error loading photos:', error);
+                document.getElementById('gallery').innerHTML = '<p style="text-align: center; color: red;">Hiba a képek betöltésekor</p>';
+            }
+
+            document.getElementById('loading').style.display = 'none';
+        }
+
+        function initLightbox() {
+            if (lightbox) lightbox.destroy();
+            
+            lightbox = new PhotoSwipeLightbox({
+                gallery: '#gallery',
+                children: 'a',
+                pswpModule: PhotoSwipe
+            });
+            
+            lightbox.init();
+        }
+
+        // Load photos on page load
+        window.loadPhotos = loadPhotos;
+        loadPhotos();
+    </script>
+</body>
+</html>
