@@ -138,18 +138,6 @@ export default function Home() {
       <Dashboard
         uppy={uppy}
         proudlyDisplayPoweredByUppy={false}
-        locale={{
-          strings: {
-            dropPasteFiles: 'Húzd ide a fájlokat vagy %{browse}',
-            browse: 'tallózz',
-            uploadXFiles: {
-              0: '%{smart_count} fájl feltöltése',
-              1: '%{smart_count} fájl feltöltése',
-            },
-            uploadComplete: 'Feltöltés kész!',
-            complete: 'Kész',
-          },
-        }}
       />
     </div>
   );
