@@ -10,6 +10,7 @@
   - `hirado-upload` - Presigned URL generálás
   - `hirado-process` - EXIF feldolgozás + fájl rendezés
 - **DynamoDB**: `hirado-metadata`
+- **GitHub**: `https://github.com/tliktor/hirado`
 
 ### Jelszó
 `k1cs1nyfalumban`
@@ -23,6 +24,21 @@ npm run dev
 
 Megnyílik: http://localhost:3000
 
+### Tesztelés
+
+```bash
+npm test              # Playwright tesztek futtatása
+npm run test:headed   # Tesztek böngészővel
+npm run test:ui       # Interaktív UI mód
+```
+
+**Teszt eredmények:** 4/7 sikeres
+- ✅ Login oldal
+- ✅ Jelszó validálás
+- ✅ Sikeres belépés
+- ✅ API endpoint
+- ⏱️ Upload tesztek (timeout - Uppy betöltési idő)
+
 ### Működés
 1. Jelszó megadása
 2. Fájlok drag & drop vagy tallózás
@@ -34,10 +50,15 @@ Megnyílik: http://localhost:3000
    - Átmozgatja: `photos/{év}/{hónap}/{fájlnév}`
    - Metadata mentése DynamoDB-be
 
-### Következő lépések
-- Galéria nézet
-- Amplify Hosting deploy
-- UI csinosítás
+### Amplify Hosting
+1. AWS Amplify Console: https://console.aws.amazon.com/amplify
+2. "New app" → "Host web app"
+3. GitHub csatlakoztatás → `tliktor/hirado` repo kiválasztása
+4. Build settings automatikusan felismeri az `amplify.yml`-t
+5. Environment variables:
+   - `NEXT_PUBLIC_API_URL`: `https://68cu0kah0h.execute-api.eu-central-1.amazonaws.com/prod`
+   - `NEXT_PUBLIC_PASSWORD`: `k1cs1nyfalumban`
+6. Deploy
 
 ### Deploy infra újra
 ```bash
@@ -50,3 +71,4 @@ npm run deploy
 cd infra
 npm run destroy
 ```
+
