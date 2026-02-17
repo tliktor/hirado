@@ -16,15 +16,7 @@ export default defineConfig({
     })
   ],
   build: {
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-          'aws-vendor': ['aws-amplify', '@aws-amplify/ui-react', '@aws-amplify/auth', '@aws-amplify/storage', '@aws-amplify/data'],
-          'ui-vendor': ['framer-motion', 'lucide-react', 'react-dropzone'],
-          'utils-vendor': ['uuid', 'date-fns'],
-        },
-      },
-    },
+    target: 'es2022',
+    minify: 'terser',
   },
 })
