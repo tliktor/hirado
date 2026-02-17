@@ -87,16 +87,30 @@ export default function Lightbox({ photos, currentIndex, onClose, onNavigate }: 
         onClick={(e) => e.stopPropagation()}
       >
         <AnimatePresence mode="wait">
-          <motion.img
-            key={photo.id}
-            src={photo.url}
-            alt={photo.caption}
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            transition={{ duration: 0.2 }}
-            className="max-h-[75vh] max-w-full object-contain rounded-lg"
-          />
+          {photo.mediaType === 'video' ? (
+            <motion.video
+              key={photo.id}
+              src={photo.url}
+              controls
+              autoPlay
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.2 }}
+              className="max-h-[75vh] max-w-full object-contain rounded-lg"
+            />
+          ) : (
+            <motion.img
+              key={photo.id}
+              src={photo.url}
+              alt={photo.caption}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.2 }}
+              className="max-h-[75vh] max-w-full object-contain rounded-lg"
+            />
+          )}
         </AnimatePresence>
 
         {/* Info bar */}
@@ -120,6 +134,11 @@ export default function Lightbox({ photos, currentIndex, onClose, onNavigate }: 
               {photo.source === 'viber' ? <Smartphone className="w-4 h-4" /> : <Globe className="w-4 h-4" />}
               {photo.source === 'viber' ? 'Viber' : 'Web'}
             </div>
+            {photo.mediaType === 'video' && photo.duration && (
+              <div className="flex items-center gap-1">
+                {Math.floor(photo.duration / 60)}:{(photo.duration % 60).toString().padStart(2, '0')} perc
+              </div>
+            )}
             <div className="flex items-center gap-1">
               {photo.width} x {photo.height}
             </div>

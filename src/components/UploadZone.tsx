@@ -1,6 +1,6 @@
 import { useDropzone } from 'react-dropzone';
 import { motion } from 'framer-motion';
-import { Upload, X, CheckCircle, Loader2, Image } from 'lucide-react';
+import { Upload, X, CheckCircle, Loader2, Image, Video } from 'lucide-react';
 import type { UploadingFile } from '../types';
 
 interface UploadZoneProps {
@@ -13,7 +13,10 @@ interface UploadZoneProps {
 export default function UploadZone({ files, isUploading, onDrop, onRemove }: UploadZoneProps) {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: { 'image/*': ['.jpg', '.jpeg', '.png', '.webp', '.gif'] },
+    accept: {
+      'image/*': ['.jpg', '.jpeg', '.png', '.webp', '.gif'],
+      'video/*': ['.mp4', '.mov', '.avi', '.webm', '.mkv']
+    },
     disabled: isUploading,
   });
 
@@ -41,7 +44,7 @@ export default function UploadZone({ files, isUploading, onDrop, onRemove }: Upl
               {isDragActive ? 'Engedd el a fotókat!' : 'Húzd ide a fotókat'}
             </p>
             <p className="text-sm text-light-muted dark:text-dark-muted mt-1">
-              vagy kattints a böngészéshez (JPG, PNG, WebP, GIF)
+              vagy kattints a böngészéshez (JPG, PNG, WebP, GIF, MP4, MOV)
             </p>
           </div>
         </motion.div>
@@ -58,11 +61,20 @@ export default function UploadZone({ files, isUploading, onDrop, onRemove }: Upl
               className="relative group rounded-xl overflow-hidden bg-light-card dark:bg-dark-card"
             >
               <div className="aspect-square">
-                <img
-                  src={file.preview}
-                  alt={file.file.name}
-                  className="w-full h-full object-cover"
-                />
+                {file.file.type.startsWith('video/') ? (
+                  <video
+                    src={file.preview}
+                    className="w-full h-full object-cover"
+                    muted
+                    playsInline
+                  />
+                ) : (
+                  <img
+                    src={file.preview}
+                    alt={file.file.name}
+                    className="w-full h-full object-cover"
+                  />
+                )}
               </div>
 
               {/* Progress overlay */}
@@ -102,7 +114,11 @@ export default function UploadZone({ files, isUploading, onDrop, onRemove }: Upl
               {/* Filename */}
               <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/60 to-transparent">
                 <div className="flex items-center gap-1 text-white text-xs truncate">
-                  <Image className="w-3 h-3 shrink-0" />
+                  {file.file.type.startsWith('video/') ? (
+                    <Video className="w-3 h-3 shrink-0" />
+                  ) : (
+                    <Image className="w-3 h-3 shrink-0" />
+                  )}
                   <span className="truncate">{file.file.name}</span>
                 </div>
               </div>

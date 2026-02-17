@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Smartphone, Globe } from 'lucide-react';
+import { Smartphone, Globe, Play } from 'lucide-react';
 import type { Photo } from '../types';
 
 interface PhotoCardProps {
@@ -17,7 +17,7 @@ export default function PhotoCard({ photo, onClick, index }: PhotoCardProps) {
       className="group cursor-pointer relative overflow-hidden rounded-xl bg-light-card dark:bg-dark-card shadow-sm hover:shadow-xl transition-shadow duration-300"
       onClick={onClick}
     >
-      <div className="overflow-hidden">
+      <div className="overflow-hidden relative">
         <img
           src={photo.thumbnailUrl}
           alt={photo.caption}
@@ -25,6 +25,14 @@ export default function PhotoCard({ photo, onClick, index }: PhotoCardProps) {
           className="w-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
           style={{ aspectRatio: `${photo.width}/${photo.height}` }}
         />
+        {/* Video play icon overlay */}
+        {photo.mediaType === 'video' && (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="bg-black/50 backdrop-blur-sm rounded-full p-3 group-hover:scale-110 transition-transform">
+              <Play className="w-8 h-8 text-white fill-white" />
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Hover overlay */}
@@ -39,6 +47,11 @@ export default function PhotoCard({ photo, onClick, index }: PhotoCardProps) {
             )}
             <span>{photo.source === 'viber' ? 'Viber' : 'Web'}</span>
           </div>
+          {photo.mediaType === 'video' && photo.duration && (
+            <span className="text-white/70 text-xs">
+              {formatDuration(photo.duration)}
+            </span>
+          )}
           {photo.tags.length > 0 && (
             <span className="text-white/50 text-xs">
               #{photo.tags[0]}
@@ -61,4 +74,10 @@ export default function PhotoCard({ photo, onClick, index }: PhotoCardProps) {
       </div>
     </motion.div>
   );
+}
+
+function formatDuration(seconds: number): string {
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  return mins > 0 ? `${mins}:${secs.toString().padStart(2, '0')}` : `0:${secs.toString().padStart(2, '0')}`;
 }

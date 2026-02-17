@@ -47,7 +47,9 @@ export function useUpload(onComplete?: () => void) {
 
           const photoId = uuidv4();
           const ext = file.file.name.split('.').pop() || 'jpg';
-          const s3Key = `photos/${identityId}/${photoId}.${ext}`;
+          const isVideo = file.file.type.startsWith('video/');
+          const prefix = isVideo ? 'videos' : 'photos';
+          const s3Key = `${prefix}/${identityId}/${photoId}.${ext}`;
 
           await uploadData({
             path: s3Key,
@@ -65,19 +67,30 @@ export function useUpload(onComplete?: () => void) {
             },
           }).result;
 
-          const dimensions = await getImageDimensions(file.preview);
+          let dimensions = { width: 0, height: 0 };
+          let duration = 0;
+
+          if (isVideo) {
+            const videoDims = await getVideoDimensions(file.preview);
+            dimensions = { width: videoDims.width, height: videoDims.height };
+            duration = videoDims.duration;
+          } else {
+            dimensions = await getImageDimensions(file.preview);
+          }
 
           await client.models.Photo.create({
             albumId,
             s3Key,
-            thumbnailKey: s3Key.replace('photos/', 'thumbnails/'),
+            thumbnailKey: s3Key.replace(/^(photos|videos)\//, 'thumbnails/'),
             originalFilename: file.file.name,
             caption,
             tags,
             source: 'web',
+            mediaType: isVideo ? 'video' : 'image',
             width: dimensions.width,
             height: dimensions.height,
             fileSize: file.file.size,
+            duration: isVideo ? duration : undefined,
           });
 
           setFiles((prev) =>
@@ -118,5 +131,20 @@ function getImageDimensions(src: string): Promise<{ width: number; height: numbe
     img.onload = () => resolve({ width: img.naturalWidth, height: img.naturalHeight });
     img.onerror = () => resolve({ width: 0, height: 0 });
     img.src = src;
+  });
+}
+
+function getVideoDimensions(src: string): Promise<{ width: number; height: number; duration: number }> {
+  return new Promise((resolve) => {
+    const video = document.createElement('video');
+    video.onloadedmetadata = () => {
+      resolve({
+        width: video.videoWidth,
+        height: video.videoHeight,
+        duration: Math.round(video.duration),
+      });
+    };
+    video.onerror = () => resolve({ width: 0, height: 0, duration: 0 });
+    video.src = src;
   });
 }

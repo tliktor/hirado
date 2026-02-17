@@ -8,9 +8,11 @@ export interface Photo {
   caption: string;
   tags: string[];
   source: 'viber' | 'web';
+  mediaType?: 'image' | 'video';
   width: number;
   height: number;
   fileSize: number;
+  duration?: number; // Video duration in seconds
   createdAt: string;
   url: string;
   thumbnailUrl: string;

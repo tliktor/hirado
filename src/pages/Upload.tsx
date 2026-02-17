@@ -56,11 +56,11 @@ export default function Upload() {
             <UploadIcon className="w-6 h-6 text-vault-500" />
           </div>
           <h1 className="text-2xl sm:text-3xl font-bold text-light-text dark:text-dark-text">
-            Fotók feltöltése
+            Média feltöltése
           </h1>
         </div>
         <p className="text-light-muted dark:text-dark-muted mb-8">
-          Húzd ide a fotóidat, vagy kattints a feltöltéshez
+          Húzd ide a fotóidat és videóidat, vagy kattints a feltöltéshez
         </p>
       </motion.div>
 
@@ -150,14 +150,14 @@ export default function Upload() {
               className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-vault-500 to-vault-700 text-white rounded-xl font-medium hover:shadow-lg hover:shadow-vault-500/25 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
             >
               <Sparkles className="w-4 h-4" />
-              Feltöltés ({pendingCount} fotó)
+              Feltöltés ({pendingCount} {pendingCount === 1 ? 'fájl' : 'fájl'})
             </button>
             {doneCount > 0 && (
               <button
                 onClick={clearDone}
                 className="px-4 py-3 text-sm text-light-muted dark:text-dark-muted hover:text-light-text dark:hover:text-dark-text transition-colors"
               >
-                Kész fotók eltávolítása
+                Kész fájlok eltávolítása
               </button>
             )}
           </div>

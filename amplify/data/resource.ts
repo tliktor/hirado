@@ -2,6 +2,7 @@ import { type ClientSchema, a, defineData } from '@aws-amplify/backend';
 
 const schema = a.schema({
   PhotoSource: a.enum(['viber', 'web']),
+  MediaType: a.enum(['image', 'video']),
 
   Photo: a
     .model({
@@ -12,9 +13,11 @@ const schema = a.schema({
       caption: a.string(),
       tags: a.string().array(),
       source: a.ref('PhotoSource'),
+      mediaType: a.ref('MediaType'),
       width: a.integer(),
       height: a.integer(),
       fileSize: a.integer(),
+      duration: a.integer(), // For videos: duration in seconds
     })
     .authorization((allow) => [allow.owner(), allow.publicApiKey().to(['read'])]),
 
