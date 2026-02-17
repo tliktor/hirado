@@ -174,12 +174,24 @@ frontend:
 |---------|--------|------------|
 | Login/Auth | ✅ OK | Cognito email/password |
 | Fotó feltöltés | ✅ OK | S3 + thumbnail generation |
+| **Videó feltöltés** | ✅ OK | MP4, MOV, AVI, WebM, MKV support |
+| **S3 Intelligent-Tiering** | ✅ OK | 30-50% cost savings on inactive media |
 | Album CRUD | ✅ OK | Létrehozás, listázás működik |
-| Gallery | ✅ OK | Masonry grid, 8+ fotó tesztelve |
+| Gallery | ✅ OK | Masonry grid, image + video support |
+| Lightbox | ✅ OK | Video playback with controls |
 | Private access | ✅ OK | Public sharing disabled |
 | SPA routing | ✅ OK | /upload, /albums elérhető |
 
 **⚠️ Ismert apró bug**: Upload UI counter nem frissül ("Feltöltés (0 fotó)"), de funkcionalitás OK
+
+### Költség Optimalizáció (S3 Intelligent-Tiering)
+
+- **Frequent Access tier** (0-30 nap): $0.023/GB (S3 Standard ár)
+- **Infrequent Access tier** (30+ nap): $0.0125/GB (46% olcsóbb)
+- **Archive Access tier** (90+ nap): $0.004/GB (83% olcsóbb)
+- **Deep Archive** (180+ nap): $0.00099/GB (96% olcsóbb)
+- **Monitoring díj**: $0.0025/1000 objektum (~elhanyagolható)
+- **Becsült megtakarítás**: 30-50% ritkán használt média esetén
 
 ## Ami hiányzik / TODO
 
