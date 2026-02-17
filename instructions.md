@@ -183,8 +183,8 @@ frontend:
 
 ## Ami hiányzik / TODO
 
-- [ ] Viber bot webhook - **NEM KELL** (követelmény törlve)
-- [ ] Share link - **TÖRÖLVE** (app 100% privát)
+- [ ] **Viber bot webhook** (processViberMessage Lambda) - **NEM IMPLEMENTÁLT**
+- [ ] Share link - **TÖRÖLVE** (app privát lett, public sharing disabled)
 - [ ] Upload counter bug fix (P3 - kozmetikai)
 - [ ] CloudFront CDN képekhez (opcionális optimalizáció)
 - [ ] PWA support (opcionális)
