@@ -1,10 +1,13 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { FolderOpen, Plus, Loader2 } from 'lucide-react';
 import AlbumCard from '../components/AlbumCard';
+import CreateAlbumModal from '../components/CreateAlbumModal';
 import { usePhotos } from '../hooks/usePhotos';
 
 export default function Albums() {
-  const { albums, allPhotos, loading } = usePhotos();
+  const { albums, allPhotos, loading, refetch } = usePhotos();
+  const [showCreateModal, setShowCreateModal] = useState(false);
 
   if (loading) {
     return (
@@ -35,7 +38,10 @@ export default function Albums() {
             {albums.length} album, {allPhotos.length} fotó összesen
           </p>
         </div>
-        <button className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-vault-500 to-vault-700 text-white rounded-xl text-sm font-medium hover:shadow-lg hover:shadow-vault-500/25 transition-all">
+        <button
+          onClick={() => setShowCreateModal(true)}
+          className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-vault-500 to-vault-700 text-white rounded-xl text-sm font-medium hover:shadow-lg hover:shadow-vault-500/25 transition-all"
+        >
           <Plus className="w-4 h-4" />
           Új album
         </button>
@@ -49,6 +55,13 @@ export default function Albums() {
           );
         })}
       </div>
+
+      {showCreateModal && (
+        <CreateAlbumModal
+          onClose={() => setShowCreateModal(false)}
+          onSuccess={refetch}
+        />
+      )}
     </div>
   );
 }

@@ -5,7 +5,6 @@ import Gallery from './pages/Gallery';
 import Upload from './pages/Upload';
 import Albums from './pages/Albums';
 import AlbumDetail from './pages/AlbumDetail';
-import SharedGallery from './pages/SharedGallery';
 import { useTheme } from './hooks/useTheme';
 
 function AuthenticatedRoutes() {
@@ -31,7 +30,6 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/share/:id" element={<SharedGallery />} />
         <Route path="/*" element={<AuthenticatedRoutes />} />
       </Routes>
     </BrowserRouter>

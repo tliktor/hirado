@@ -1,16 +1,13 @@
-import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Share2, Images, Loader2 } from 'lucide-react';
+import { ArrowLeft, Images, Loader2 } from 'lucide-react';
 import PhotoGrid from '../components/PhotoGrid';
-import ShareModal from '../components/ShareModal';
 import { usePhotos } from '../hooks/usePhotos';
 
 export default function AlbumDetail() {
   const { id } = useParams<{ id: string }>();
   const { photos, albums, loading } = usePhotos(id);
   const album = albums.find((a) => a.id === id);
-  const [showShare, setShowShare] = useState(false);
 
   if (loading) {
     return (
@@ -44,37 +41,19 @@ export default function AlbumDetail() {
           Vissza az albumokhoz
         </Link>
 
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-light-text dark:text-dark-text">
-              {album.name}
-            </h1>
-            <p className="text-light-muted dark:text-dark-muted mt-1">{album.description}</p>
-            <div className="flex items-center gap-2 mt-2 text-sm text-light-muted dark:text-dark-muted">
-              <Images className="w-4 h-4" />
-              {photos.length} fotó
-            </div>
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-light-text dark:text-dark-text">
+            {album.name}
+          </h1>
+          <p className="text-light-muted dark:text-dark-muted mt-1">{album.description}</p>
+          <div className="flex items-center gap-2 mt-2 text-sm text-light-muted dark:text-dark-muted">
+            <Images className="w-4 h-4" />
+            {photos.length} fotó
           </div>
-
-          <button
-            onClick={() => setShowShare(true)}
-            className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-vault-500 to-vault-700 text-white rounded-xl text-sm font-medium hover:shadow-lg hover:shadow-vault-500/25 transition-all self-start"
-          >
-            <Share2 className="w-4 h-4" />
-            Megosztás
-          </button>
         </div>
       </motion.div>
 
       <PhotoGrid photos={photos} />
-
-      {showShare && (
-        <ShareModal
-          albumName={album.name}
-          shareId={album.id}
-          onClose={() => setShowShare(false)}
-        />
-      )}
     </div>
   );
 }

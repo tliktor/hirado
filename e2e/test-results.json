@@ -1,0 +1,290 @@
+{
+  "config": {
+    "configFile": "/Users/tibor/Desktop/dev/hirado/playwright.config.ts",
+    "rootDir": "/Users/tibor/Desktop/dev/hirado/e2e",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/Users/tibor/Desktop/dev/hirado/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/Users/tibor/Desktop/dev/hirado/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "e2e/test-results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "runAgents": "none",
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.58.2",
+    "workers": 5,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "diagnostic.spec.ts",
+      "file": "diagnostic.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Diagnostic Tests",
+          "file": "diagnostic.spec.ts",
+          "line": 3,
+          "column": 6,
+          "specs": [
+            {
+              "title": "Capture console logs and network requests",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3891,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "\n=== DIAGNOSTIC REPORT ===\n\n"
+                        },
+                        {
+                          "text": "1. PAGE CONTENT:\n"
+                        },
+                        {
+                          "text": "Body text: Sign In\nCreate Account\nSign in\nEmail\nPassword\nPassword is hidden\nSign in\nForgot your password?\n"
+                        },
+                        {
+                          "text": "HTML length: \u001b[33m4163\u001b[39m\n"
+                        },
+                        {
+                          "text": "\n2. CONSOLE MESSAGES:\n"
+                        },
+                        {
+                          "text": "[warning] Amplify has not been configured. Please call Amplify.configure() before using this service.\n"
+                        },
+                        {
+                          "text": "[warning] Amplify has not been configured. Please call Amplify.configure() before using this service.\n"
+                        },
+                        {
+                          "text": "[warning] Amplify has not been configured. Please call Amplify.configure() before using this service.\n"
+                        },
+                        {
+                          "text": "[warning] Amplify has not been configured. Please call Amplify.configure() before using this service.\n"
+                        },
+                        {
+                          "text": "\n3. ERRORS:\n"
+                        },
+                        {
+                          "text": "No errors detected\n"
+                        },
+                        {
+                          "text": "\n4. FAILED REQUESTS:\n"
+                        },
+                        {
+                          "text": "No failed requests\n"
+                        },
+                        {
+                          "text": "\n5. NETWORK REQUESTS (non-2xx):\n"
+                        },
+                        {
+                          "text": "All requests returned 2xx-3xx status\n"
+                        },
+                        {
+                          "text": "\n6. KEY RESOURCES:\n"
+                        },
+                        {
+                          "text": "JS files loaded: 1\n"
+                        },
+                        {
+                          "text": "CSS files loaded: 1\n"
+                        },
+                        {
+                          "text": "\n7. DOM STATE:\n"
+                        },
+                        {
+                          "text": "Root element: {\n  exists: \u001b[33mtrue\u001b[39m,\n  childCount: \u001b[33m1\u001b[39m,\n  innerHTML: \u001b[32m'<div data-amplify-authenticator=\"\" data-variation=\"default\"><div data-amplify-container=\"\"><div data-amplify-router=\"\"><div class=\"amplify-tabs\"><div role=\"tablist\" class=\"amplify-tabs__list amplify-tabs__list--top amplify-tabs__list--equal\"><button role=\"tab\" id=\"amplify-id-_r_0_-tab-signIn\" aria-selected=\"true\" aria-controls=\"amplify-id-_r_0_-panel-signIn\" class=\"amplify-tabs__item amplify-tabs__item--active\">Sign In</button><button role=\"tab\" id=\"amplify-id-_r_0_-tab-signUp\" aria-selected=\"fa'\u001b[39m\n}\n"
+                        },
+                        {
+                          "text": "\n8. AWS AMPLIFY CONFIG:\n"
+                        },
+                        {
+                          "text": "Amplify loaded: { hasAmplify: \u001b[33mfalse\u001b[39m, hasAWS: \u001b[33mfalse\u001b[39m }\n"
+                        },
+                        {
+                          "text": "\n=== END DIAGNOSTIC REPORT ===\n\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-02-17T05:23:23.897Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "92257fb6bc5544758cc3-4d2710863b309213e22d",
+              "file": "diagnostic.spec.ts",
+              "line": 4,
+              "column": 3
+            },
+            {
+              "title": "Check specific elements and rendering",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2787,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "\n=== ELEMENT CHECKS ===\n"
+                        },
+                        {
+                          "text": "{\n  \"root\": 1,\n  \"authenticator\": 1,\n  \"anyButton\": 5,\n  \"anyInput\": 2,\n  \"anyForm\": 1,\n  \"anyDiv\": 17\n}\n"
+                        },
+                        {
+                          "text": "=== END ELEMENT CHECKS ===\n\n"
+                        },
+                        {
+                          "text": "\n=== BODY STYLES ===\n"
+                        },
+                        {
+                          "text": "{\n  \"backgroundColor\": \"rgb(250, 250, 250)\",\n  \"color\": \"rgb(17, 24, 39)\",\n  \"fontFamily\": \"Inter, system-ui, -apple-system, sans-serif\",\n  \"display\": \"block\"\n}\n"
+                        },
+                        {
+                          "text": "=== END BODY STYLES ===\n\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-02-17T05:23:28.477Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "92257fb6bc5544758cc3-12d25453ee2c00966ea3",
+              "file": "diagnostic.spec.ts",
+              "line": 120,
+              "column": 3
+            },
+            {
+              "title": "Test with authenticated access simulation",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 756,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "\n=== LOCAL STORAGE ===\n"
+                        },
+                        {
+                          "text": "Keys: [ \u001b[32m'photovault-theme'\u001b[39m ]\n"
+                        },
+                        {
+                          "text": "=== END LOCAL STORAGE ===\n\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-02-17T05:23:31.271Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "92257fb6bc5544758cc3-f3b5af4a708c902b4df2",
+              "file": "diagnostic.spec.ts",
+              "line": 157,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-02-17T05:23:23.243Z",
+    "duration": 8823.291,
+    "expected": 3,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

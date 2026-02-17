@@ -17,14 +17,9 @@ export default function Layout({ isDark, toggleTheme, signOut, displayName }: La
         <Outlet />
       </main>
       <footer className="border-t border-light-border dark:border-dark-border py-6">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-light-muted dark:text-dark-muted">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-center text-sm text-light-muted dark:text-dark-muted">
           <div className="flex items-center gap-1">
             Made with <Heart className="w-4 h-4 text-red-500 fill-red-500" /> PhotoVault
-          </div>
-          <div className="flex items-center gap-4">
-            <span>Viber Bot</span>
-            <span className="text-light-border dark:text-dark-border">|</span>
-            <span>Share Album</span>
           </div>
         </div>
       </footer>
