@@ -70,20 +70,6 @@ export default function PhotoCard({ photo, onClick, index }: PhotoCardProps) {
           )}
         </div>
       </div>
-    </motion.div>
-  );
-}
-            <span className="text-white/70 text-xs">
-              {formatDuration(photo.duration)}
-            </span>
-          )}
-          {photo.tags.length > 0 && (
-            <span className="text-white/50 text-xs">
-              #{photo.tags[0]}
-            </span>
-          )}
-        </div>
-      </div>
 
       {/* Source badge */}
       <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -99,10 +85,4 @@ export default function PhotoCard({ photo, onClick, index }: PhotoCardProps) {
       </div>
     </motion.div>
   );
-}
-
-function formatDuration(seconds: number): string {
-  const mins = Math.floor(seconds / 60);
-  const secs = seconds % 60;
-  return mins > 0 ? `${mins}:${secs.toString().padStart(2, '0')}` : `0:${secs.toString().padStart(2, '0')}`;
 }
