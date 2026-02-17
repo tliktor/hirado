@@ -4,11 +4,12 @@ const APP_URL = 'https://master.d3rzgyt9cnfupy.amplifyapp.com';
 const TEST_USER = 'tibor@liktor.hu';
 const TEST_PASSWORD = 'viFxyg-jymzun-2zimno';
 
+test.use({
+  viewport: { width: 1280, height: 720 },
+  screenshot: 'only-on-failure'
+});
+
 test.describe('PhotoVault Manual Tests', () => {
-  test.use({
-    viewport: { width: 1280, height: 720 },
-    screenshot: 'only-on-failure'
-  });
 
   test('Full workflow: Login -> Upload -> Album -> Share', async ({ page }) => {
     // Navigate to app
@@ -17,12 +18,15 @@ test.describe('PhotoVault Manual Tests', () => {
 
     // Login
     console.log('Attempting login...');
-    await page.fill('input[name="username"], input[type="email"]', TEST_USER);
-    await page.fill('input[name="password"], input[type="password"]', TEST_PASSWORD);
-    await page.click('button[type="submit"], button:has-text("Sign in"), button:has-text("Bejelentkezés")');
+    await page.getByLabel('Email').fill(TEST_USER);
+    await page.getByRole('textbox', { name: 'Password' }).fill(TEST_PASSWORD);
 
-    // Wait for auth to complete
-    await page.waitForTimeout(3000);
+    // Click sign in and wait for navigation
+    const signInButton = page.getByRole('button', { name: /sign in/i });
+    await signInButton.click();
+
+    // Wait for navigation or error (longer timeout for Cognito)
+    await page.waitForTimeout(5000);
 
     // Check if we're logged in (look for navigation or user info)
     const isLoggedIn = await page.locator('nav, header').count() > 0;

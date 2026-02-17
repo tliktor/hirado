@@ -1,0 +1,75 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e6]:
+      - link "PhotoVault" [ref=e7] [cursor=pointer]:
+        - /url: /
+        - img [ref=e9]
+        - generic [ref=e12]: PhotoVault
+      - navigation [ref=e13]:
+        - link "Galéria" [ref=e14] [cursor=pointer]:
+          - /url: /
+          - img [ref=e15]
+          - text: Galéria
+        - link "Albumok" [ref=e20] [cursor=pointer]:
+          - /url: /albums
+          - img [ref=e21]
+          - text: Albumok
+        - link "Feltöltés" [ref=e23] [cursor=pointer]:
+          - /url: /upload
+          - img [ref=e24]
+          - text: Feltöltés
+      - generic [ref=e27]:
+        - generic [ref=e28]: tibor@liktor.hu
+        - button "Sötét mód" [ref=e29]:
+          - img [ref=e31]
+        - button "Kijelentkezés" [ref=e33]:
+          - img [ref=e34]
+  - main [ref=e37]:
+    - generic [ref=e38]:
+      - generic [ref=e39]:
+        - generic [ref=e40]:
+          - generic [ref=e41]:
+            - img [ref=e43]
+            - heading "Albumok" [level=1] [ref=e45]
+          - paragraph [ref=e46]: 1 album, 8 fotó összesen
+        - button "Új album" [ref=e47]:
+          - img [ref=e48]
+          - text: Új album
+      - link "Test Album 1771307584895 E2E test album created by Playwright 0" [ref=e51] [cursor=pointer]:
+        - /url: /albums/c3d47aea-98ed-4ef5-9b29-49626ee04244
+        - generic [ref=e52]:
+          - img [ref=e54]
+          - generic [ref=e60]:
+            - heading "Test Album 1771307584895" [level=3] [ref=e61]
+            - paragraph [ref=e62]: E2E test album created by Playwright
+          - generic [ref=e63]:
+            - img [ref=e64]
+            - text: "0"
+      - generic [ref=e70]:
+        - generic [ref=e71]:
+          - generic [ref=e72]:
+            - img [ref=e74]
+            - heading "Új album létrehozása" [level=3] [ref=e76]
+          - button [ref=e77]:
+            - img [ref=e78]
+        - generic [ref=e81]:
+          - generic [ref=e82]:
+            - generic [ref=e83]: Album neve *
+            - textbox "Album neve *" [active] [ref=e84]:
+              - /placeholder: pl. Nyaralás 2024
+          - generic [ref=e85]:
+            - generic [ref=e86]: Leírás (opcionális)
+            - textbox "Leírás (opcionális)" [ref=e87]:
+              - /placeholder: Néhány szó az albumról...
+          - generic [ref=e88]:
+            - button "Mégse" [ref=e89]
+            - button "Létrehozás" [disabled] [ref=e90]
+  - contentinfo [ref=e91]:
+    - generic [ref=e93]:
+      - text: Made with
+      - img [ref=e94]
+      - text: PhotoVault
+```
