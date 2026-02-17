@@ -156,19 +156,37 @@ frontend:
 
 ---
 
-## Ami kész
+## Ami kész ✅
 
-- Frontend: teljes galéria UI (masonry grid, lightbox, upload, albumok, share, dark/light theme)
+- Frontend: teljes galéria UI (masonry grid, lightbox, upload, albumok, dark/light theme)
 - Backend: Auth (Cognito), Data (AppSync+DynamoDB), Storage (S3), Lambda (thumbnail)
 - CI/CD: GitHub -> Amplify auto-build (backend + frontend)
 - IAM: AmplifyBackendDeployRole service role
+- SPA routing: `public/_redirects` file az Amplify-nak
+- Album létrehozás: CreateAlbumModal komponens + működő form
+- **Privát app**: Public sharing eltávolítva, csak authenticated access
+- **Production deploy**: Build #15 SUCCESS, élesben működik
+- **E2E teszt**: Playwright, upload + album creation tesztelve
+
+## Production Status (2026-02-17)
+
+| Funkció | Status | Megjegyzés |
+|---------|--------|------------|
+| Login/Auth | ✅ OK | Cognito email/password |
+| Fotó feltöltés | ✅ OK | S3 + thumbnail generation |
+| Album CRUD | ✅ OK | Létrehozás, listázás működik |
+| Gallery | ✅ OK | Masonry grid, 8+ fotó tesztelve |
+| Private access | ✅ OK | Public sharing disabled |
+| SPA routing | ✅ OK | /upload, /albums elérhető |
+
+**⚠️ Ismert apró bug**: Upload UI counter nem frissül ("Feltöltés (0 fotó)"), de funkcionalitás OK
 
 ## Ami hiányzik / TODO
 
-- [ ] Viber bot webhook (processViberMessage Lambda)
-- [ ] Album létrehozás UI handler
-- [ ] Share link lejárat kezelés
-- [ ] Share link view count frissítés
-- [ ] CloudFront CDN képekhez
-- [ ] ViberQR komponens implementálás
-- [ ] PWA support
+- [ ] Viber bot webhook - **NEM KELL** (követelmény törlve)
+- [ ] Share link - **TÖRÖLVE** (app 100% privát)
+- [ ] Upload counter bug fix (P3 - kozmetikai)
+- [ ] CloudFront CDN képekhez (opcionális optimalizáció)
+- [ ] PWA support (opcionális)
+- [ ] Lightbox keyboard nav tesztelés
+- [ ] Search/filter funkcionalitás tesztelése
