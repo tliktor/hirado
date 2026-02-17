@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "analyze": "vite build --config vite.config.analyze.ts",
     "lint": "eslint .",
     "preview": "vite preview"
   },
@@ -28,7 +29,7 @@
     "@parcel/watcher-linux-x64-glibc": "^2.5.1"
   },
   "devDependencies": {
-    "@aws-amplify/backend": "^1.21.0",
+    "@aws-amplify/backend": "^1.2.1",
     "@aws-amplify/backend-cli": "^1.8.2",
     "@eslint/js": "^9.39.1",
     "@playwright/test": "^1.58.2",
@@ -44,6 +45,7 @@
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.24",
     "globals": "^16.5.0",
+    "rollup-plugin-visualizer": "^6.0.5",
     "sharp": "^0.34.5",
     "tailwindcss": "^4.1.18",
     "tsx": "^4.21.0",

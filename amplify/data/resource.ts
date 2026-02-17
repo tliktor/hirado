@@ -19,7 +19,7 @@ const schema = a.schema({
       fileSize: a.integer(),
       duration: a.integer(), // For videos: duration in seconds
     })
-    .authorization((allow) => [allow.owner(), allow.publicApiKey().to(['read'])]),
+    .authorization((allow) => [allow.owner()]),
 
   Album: a
     .model({
@@ -28,7 +28,7 @@ const schema = a.schema({
       coverPhotoId: a.string(),
       photoCount: a.integer(),
     })
-    .authorization((allow) => [allow.owner(), allow.publicApiKey().to(['read'])]),
+    .authorization((allow) => [allow.owner()]),
 
   ShareLink: a
     .model({
@@ -37,7 +37,7 @@ const schema = a.schema({
       expiresAt: a.datetime(),
       viewCount: a.integer(),
     })
-    .authorization((allow) => [allow.owner(), allow.publicApiKey().to(['read'])]),
+    .authorization((allow) => [allow.owner()]),
 });
 
 export type Schema = ClientSchema<typeof schema>;
@@ -46,8 +46,5 @@ export const data = defineData({
   schema,
   authorizationModes: {
     defaultAuthorizationMode: 'userPool',
-    apiKeyAuthorizationMode: {
-      expiresInDays: 365,
-    },
   },
 });

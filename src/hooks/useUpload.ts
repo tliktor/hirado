@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { uploadData } from 'aws-amplify/storage';
 import { fetchAuthSession } from 'aws-amplify/auth';
@@ -11,6 +11,13 @@ const client = generateClient<Schema>();
 export function useUpload(onComplete?: () => void) {
   const [files, setFiles] = useState<UploadingFile[]>([]);
   const [isUploading, setIsUploading] = useState(false);
+
+  // Cleanup object URLs on unmount
+  useEffect(() => {
+    return () => {
+      files.forEach(file => URL.revokeObjectURL(file.preview));
+    };
+  }, [files]);
 
   const addFiles = useCallback((acceptedFiles: File[]) => {
     const newFiles: UploadingFile[] = acceptedFiles.map((file) => ({

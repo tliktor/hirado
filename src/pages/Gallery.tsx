@@ -1,20 +1,23 @@
 import { motion } from 'framer-motion';
 import { Images, Smartphone, Globe, FolderOpen, Search, SlidersHorizontal, Loader2 } from 'lucide-react';
 import PhotoGrid from '../components/PhotoGrid';
-import { usePhotos } from '../hooks/usePhotos';
+import { usePaginatedPhotos } from '../hooks/usePaginatedPhotos';
 
 export default function Gallery() {
   const {
     photos,
     stats,
     loading,
+    isLoadingMore,
     sourceFilter,
     setSourceFilter,
     sortOrder,
     setSortOrder,
     searchQuery,
     setSearchQuery,
-  } = usePhotos();
+    sentinelRef,
+    hasMore,
+  } = usePaginatedPhotos();
 
   if (loading) {
     return (
@@ -54,9 +57,9 @@ export default function Gallery() {
       >
         {[
           { icon: Images, label: 'Összes fotó', value: stats.total, color: 'text-vault-500' },
-          { icon: Smartphone, label: 'Viber-ről', value: stats.viber, color: 'text-purple-500' },
-          { icon: Globe, label: 'Webes', value: stats.web, color: 'text-blue-500' },
-          { icon: FolderOpen, label: 'Albumok', value: stats.albums, color: 'text-emerald-500' },
+          { icon: Smartphone, label: 'Viber-ről', value: stats.viberCount, color: 'text-purple-500' },
+          { icon: Globe, label: 'Webes', value: stats.webCount, color: 'text-blue-500' },
+          { icon: FolderOpen, label: 'Képek', value: stats.imageCount, color: 'text-emerald-500' },
         ].map(({ icon: Icon, label, value, color }) => (
           <div
             key={label}
@@ -126,6 +129,21 @@ export default function Gallery() {
 
       {/* Grid */}
       <PhotoGrid photos={photos} />
+
+      {/* Infinite scroll sentinel */}
+      <div ref={sentinelRef} className="h-10 flex items-center justify-center">
+        {isLoadingMore && (
+          <div className="flex items-center gap-2 text-light-muted dark:text-dark-muted">
+            <Loader2 className="w-4 h-4 animate-spin" />
+            <span>További fotók betöltése...</span>
+          </div>
+        )}
+        {!hasMore && photos.length > 0 && (
+          <p className="text-light-muted dark:text-dark-muted text-sm">
+            Összes fotó betöltve
+          </p>
+        )}
+      </div>
     </div>
   );
 }

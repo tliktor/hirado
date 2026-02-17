@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { Smartphone, Globe, Play } from 'lucide-react';
+import { useState } from 'react';
 import type { Photo } from '../types';
 
 interface PhotoCardProps {
@@ -9,6 +10,8 @@ interface PhotoCardProps {
 }
 
 export default function PhotoCard({ photo, onClick, index }: PhotoCardProps) {
+  const [isLoaded, setIsLoaded] = useState(false);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -18,13 +21,26 @@ export default function PhotoCard({ photo, onClick, index }: PhotoCardProps) {
       onClick={onClick}
     >
       <div className="overflow-hidden relative">
+        {/* Blur-up placeholder */}
+        {!isLoaded && (
+          <div 
+            className="absolute inset-0 bg-gray-200 dark:bg-gray-800 animate-pulse"
+            style={{ aspectRatio: `${photo.width}/${photo.height}` }}
+          />
+        )}
+        
         <img
           src={photo.thumbnailUrl}
           alt={photo.caption}
           loading="lazy"
-          className="w-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+          decoding="async"
+          className={`w-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out ${
+            isLoaded ? 'opacity-100' : 'opacity-0'
+          }`}
           style={{ aspectRatio: `${photo.width}/${photo.height}` }}
+          onLoad={() => setIsLoaded(true)}
         />
+        
         {/* Video play icon overlay */}
         {photo.mediaType === 'video' && (
           <div className="absolute inset-0 flex items-center justify-center">
@@ -48,6 +64,15 @@ export default function PhotoCard({ photo, onClick, index }: PhotoCardProps) {
             <span>{photo.source === 'viber' ? 'Viber' : 'Web'}</span>
           </div>
           {photo.mediaType === 'video' && photo.duration && (
+            <span className="text-white/70 text-xs">
+              {Math.floor(photo.duration / 60)}:{String(photo.duration % 60).padStart(2, '0')}
+            </span>
+          )}
+        </div>
+      </div>
+    </motion.div>
+  );
+}
             <span className="text-white/70 text-xs">
               {formatDuration(photo.duration)}
             </span>
