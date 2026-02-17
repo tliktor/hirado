@@ -16,18 +16,14 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 export function addIntelligentTieringLifecycle(bucket: s3.IBucket, stack: cdk.Stack) {
   const cfnBucket = bucket.node.defaultChild as s3.CfnBucket;
 
+  // Use the correct property name for filter
   cfnBucket.lifecycleConfiguration = {
     rules: [
       {
         id: 'IntelligentTieringForMedia',
         status: 'Enabled',
-        // Apply to photos and videos folders
-        filter: {
-          or: [
-            { prefix: 'photos/' },
-            { prefix: 'videos/' },
-          ],
-        },
+        // Apply to photos and videos folders using prefix
+        prefix: 'photos/',
         transitions: [
           {
             storageClass: 'INTELLIGENT_TIERING',
@@ -36,11 +32,20 @@ export function addIntelligentTieringLifecycle(bucket: s3.IBucket, stack: cdk.St
         ],
       },
       {
+        id: 'IntelligentTieringForVideos',
+        status: 'Enabled',
+        prefix: 'videos/',
+        transitions: [
+          {
+            storageClass: 'INTELLIGENT_TIERING',
+            transitionInDays: 0,
+          },
+        ],
+      },
+      {
         id: 'IntelligentTieringForThumbnails',
         status: 'Enabled',
-        filter: {
-          prefix: 'thumbnails/',
-        },
+        prefix: 'thumbnails/',
         transitions: [
           {
             storageClass: 'INTELLIGENT_TIERING',
@@ -57,27 +62,6 @@ export function addIntelligentTieringLifecycle(bucket: s3.IBucket, stack: cdk.St
       },
     ],
   };
-
-  // Add Intelligent-Tiering configuration to optimize access patterns
-  const intelligentTieringConfig = new s3.CfnBucket.IntelligentTieringConfigurationProperty({
-    id: 'PhotoVaultMediaOptimization',
-    status: 'Enabled',
-    tierings: [
-      {
-        accessTier: 'ARCHIVE_ACCESS',
-        days: 90, // Move to Archive Access after 90 days of no access
-      },
-      {
-        accessTier: 'DEEP_ARCHIVE_ACCESS',
-        days: 180, // Move to Deep Archive after 180 days (optional, very cheap but slow retrieval)
-      },
-    ],
-  });
-
-  if (!cfnBucket.intelligentTieringConfigurations) {
-    cfnBucket.intelligentTieringConfigurations = [];
-  }
-  cfnBucket.intelligentTieringConfigurations.push(intelligentTieringConfig);
 
   // Output cost savings info
   new cdk.CfnOutput(stack, 'S3IntelligentTieringEnabled', {
