@@ -1,303 +1,174 @@
+# PhotoVault - Memoria Bank
 
+## Projekt Összefoglaló
 
-# 🎨 Lenyűgöző Fotókezelő App – Teljes Terv
-
-## A koncepció
-
-Egy **gyönyörű, modern fotókezelő alkalmazás**, ahova Viber-en keresztül is tudsz fotókat küldeni, és egy elegáns webes galériában böngészni/megosztani őket. A barátaid le fognak esni a székükről! 😎
+Fotókezelő alkalmazás AWS Amplify Gen2 backenddel. Viber bot integrációval tervezett, webes galéria, album kezelés, megosztás.
 
 ---
 
-## 🏗️ Architektúra Áttekintés
+## Tech Stack
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                        FELHASZNÁLÓK                              │
-│                                                                  │
-│   📱 Viber Bot              🌐 Web Galéria           🔗 Share   │
-│   (fotó küldés)            (böngészés)              (link)      │
-└──────┬──────────────────────────┬────────────────────────┬──────┘
-       │                          │                        │
-       ▼                          ▼                        ▼
-┌──────────────────────────────────────────────────────────────────┐
-│                      API GATEWAY (REST)                          │
-│   /viber-webhook    /photos    /albums    /share/{id}            │
-└──────┬──────────────────────────┬────────────────────────────────┘
-       │                          │
-       ▼                          ▼
-┌──────────────────┐   ┌──────────────────────────────────────────┐
-│ Lambda:           │   │ Lambda Functions:                        │
-│ processViber      │   │  • getPhotos (listázás, szűrés)         │
-│ Message           │   │  • processUpload (webes feltöltés)      │
-│                   │   │  • generateThumbnail (S3 trigger)       │
-│ - letölti a fotót │   │  • createShareLink (megosztás)          │
-│ - menti S3-ba     │   │  • getSharedAlbum (publikus galéria)    │
-│ - ír DynamoDB-be  │   └──────────────────────────────────────────┘
-│ - visszajelez     │              │
-└──────┬────────────┘              │
-       │                           │
-       ▼                           ▼
-┌──────────────────────────────────────────────────────────────────┐
-│                         ADATRÉTEG                                │
-│                                                                  │
-│   🪣 S3 Bucket                    📊 DynamoDB                   │
-│   ├── photos/                     ├── Photos tábla              │
-│   │   └── {userId}/{photoId}.jpg  │   (id, userId, url,         │
-│   ├── thumbnails/                 │    caption, tags,            │
-│   │   └── {userId}/{photoId}.jpg  │    createdAt, albumId)      │
-│   └── public/                     ├── Albums tábla              │
-│       └── share/{shareId}/        │   (id, name, coverPhoto)    │
-│                                   └── ShareLinks tábla          │
-│                                       (id, albumId, expiresAt)  │
-│                                                                  │
-│   🖼️ CloudFront CDN (gyors képbetöltés, HTTPS)                 │
-└──────────────────────────────────────────────────────────────────┘
-```
+| Réteg | Technológia |
+|-------|-------------|
+| Frontend | Vite 7.3 + React 19 + TypeScript 5.9 |
+| Styling | Tailwind CSS v4, Framer Motion |
+| Routing | React Router v7 |
+| Backend | AWS Amplify Gen2 (CDK alapú) |
+| Auth | Cognito User Pool (email) |
+| API | AppSync GraphQL |
+| DB | DynamoDB (Photo, Album, ShareLink modellek) |
+| Storage | S3 (photos/, thumbnails/, public/) |
+| Lambda | generateThumbnail (Sharp + Lambda Layer) |
+| Hosting | Amplify Hosting (statikus SPA, WEB platform) |
+| CI/CD | GitHub push -> Amplify auto-build |
 
 ---
 
-## 📱 Viber Bot Flow
+## AWS Erőforrások (PROD - deployolva)
 
-```
-┌──────────┐    fotó     ┌──────────┐   webhook   ┌───────────┐
-│  Viber   │ ──────────► │  Viber   │ ──────────► │    API    │
-│  User    │             │  Server  │             │  Gateway  │
-└──────────┘             └──────────┘             └─────┬─────┘
-                                                        │
-                                                        ▼
-                                                  ┌───────────┐
-                                                  │  Lambda    │
-                                                  │  process   │
-                                                  │  Viber     │
-                                                  └──┬──┬──┬──┘
-                                                     │  │  │
-                              ┌───────────────────────┘  │  └──────────────┐
-                              ▼                          ▼                 ▼
-                         ┌─────────┐            ┌──────────────┐   ┌──────────┐
-                         │   S3    │            │   DynamoDB   │   │  Viber   │
-                         │  fotó   │            │   metaadat   │   │  válasz: │
-                         │ mentés  │            │    mentés    │   │  "✅ Kész!│
-                         └─────────┘            └──────────────┘   │  Galéria:│
-                                                                   │  [link]" │
-                                                                   └──────────┘
-```
+| Erőforrás | Azonosító |
+|-----------|-----------|
+| Amplify App | `d3rzgyt9cnfupy` |
+| Region | `eu-central-1` |
+| Domain | `d3rzgyt9cnfupy.amplifyapp.com` |
+| Branch | `master` (PRODUCTION) |
+| GitHub repo | `tliktor/hirado` |
+| AppSync endpoint | `https://ie52akydlvffhcvxfykaiqw5ie.appsync-api.eu-central-1.amazonaws.com/graphql` |
+| S3 bucket | `amplify-photovault-tibor--photovaultstoragebuckete-n8p4gnctcbya` |
+| Cognito User Pool | `eu-central-1_UhHrJPH0W` |
+| IAM Service Role | `AmplifyBackendDeployRole` (AdministratorAccess-Amplify) |
 
 ---
 
-## 🌐 Frontend – A "WOW" faktor
-
-### Fő oldalak:
-
-| Oldal | Leírás | Lenyűgöző elem |
-|-------|--------|-----------------|
-| **Galéria** | Masonry grid layout | Smooth animációk, lazy loading, lightbox |
-| **Album nézet** | Fotók csoportosítva | Drag & drop rendezés, cover photo választás |
-| **Feltöltés** | Drag & drop zóna | Előnézet, progress bar, többszörös feltöltés |
-| **Megosztás** | Publikus galéria link | Gyönyörű, jelszó nélküli galéria oldal |
-| **Viber QR** | Bot hozzáadás | QR kód a Viber bot-hoz |
-
-### Design koncepció:
+## Fájlstruktúra (tényleges)
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│  🌙/☀️   📸 PhotoVault          [Upload] [Albums] [⚙️]  │
-├─────────────────────────────────────────────────────────┤
-│                                                         │
-│  ┌─────────┐ ┌──────────────┐ ┌─────────┐              │
-│  │         │ │              │ │         │              │
-│  │  fotó1  │ │    fotó2     │ │  fotó3  │              │
-│  │         │ │   (nagy)     │ │         │              │
-│  └─────────┘ │              │ └─────────┘              │
-│  ┌──────────┐│              │ ┌──────────────────┐     │
-│  │          │└──────────────┘ │                  │     │
-│  │  fotó4   │ ┌─────────┐    │     fotó6         │     │
-│  │          │ │  fotó5  │    │    (széles)       │     │
-│  └──────────┘ │         │    │                  │     │
-│               └─────────┘    └──────────────────┘     │
-│                                                         │
-│  ──── Viber-ről érkezett (ma) ────                     │
-│  ┌─────────┐ ┌─────────┐ ┌─────────┐                  │
-│  │ 📱 v1   │ │ 📱 v2   │ │ 📱 v3   │                  │
-│  └─────────┘ └─────────┘ └─────────┘                  │
-│                                                         │
-├─────────────────────────────────────────────────────────┤
-│  Made with ❤️ │ Viber Bot: [QR]  │ Share Album [🔗]    │
-└─────────────────────────────────────────────────────────┘
-```
-
----
-
-## 📁 Projekt Fájlstruktúra
-
-```
-photovault/
+hirado/
 ├── amplify/
-│   ├── auth/
-│   │   └── resource.ts              # Cognito auth (opcionális)
-│   ├── data/
-│   │   └── resource.ts              # DynamoDB táblák
-│   ├── storage/
-│   │   └── resource.ts              # S3 bucket konfig
+│   ├── auth/resource.ts                    # Cognito email auth
+│   ├── data/resource.ts                    # GraphQL schema (Photo, Album, ShareLink)
+│   ├── storage/resource.ts                 # S3 bucket (photovaultStorage)
 │   ├── functions/
-│   │   ├── processViberMessage/
-│   │   │   ├── handler.ts           # Viber webhook feldolgozó
-│   │   │   └── resource.ts
-│   │   ├── getPhotos/
-│   │   │   ├── handler.ts           # Fotók listázása
-│   │   │   └── resource.ts
-│   │   ├── processUpload/
-│   │   │   ├── handler.ts           # Webes feltöltés kezelő
-│   │   │   └── resource.ts
-│   │   ├── generateThumbnail/
-│   │   │   ├── handler.ts           # Automatikus thumbnail generálás
-│   │   │   └── resource.ts
-│   │   └── createShareLink/
-│   │       ├── handler.ts           # Megosztó link generálás
-│   │       └── resource.ts
-│   └── backend.ts                   # Fő backend konfiguráció
-│
+│   │   └── generateThumbnail/
+│   │       ├── handler.ts                  # S3 trigger -> Sharp resize -> thumbnail
+│   │       ├── resource.ts                 # CDK provider pattern (NodejsFunction + Lambda Layer)
+│   │       └── package.json
+│   ├── layers/                             # .gitignore-ban, CI-ben buildel
+│   │   └── sharp/nodejs/                   # Sharp Linux binaries Lambda Layer-hez
+│   ├── backend.ts                          # defineBackend + S3 event notification
+│   ├── package.json
+│   └── tsconfig.json
 ├── src/
-│   ├── app/
-│   │   ├── layout.tsx               # Fő layout (dark/light theme)
-│   │   ├── page.tsx                 # Galéria főoldal
-│   │   ├── upload/
-│   │   │   └── page.tsx             # Feltöltő oldal
-│   │   ├── albums/
-│   │   │   ├── page.tsx             # Album lista
-│   │   │   └── [id]/
-│   │   │       └── page.tsx         # Egy album nézete
-│   │   └── share/
-│   │       └── [id]/
-│   │           └── page.tsx         # Publikus megosztott galéria
-│   │
+│   ├── pages/
+│   │   ├── Gallery.tsx                     # Fő galéria (keresés, szűrés, stats)
+│   │   ├── Upload.tsx                      # Drag & drop feltöltés
+│   │   ├── Albums.tsx                      # Album lista
+│   │   ├── AlbumDetail.tsx                 # Album részletek + share
+│   │   └── SharedGallery.tsx               # Publikus megosztott galéria
 │   ├── components/
-│   │   ├── PhotoGrid.tsx            # Masonry grid galéria
-│   │   ├── PhotoCard.tsx            # Egy fotó kártya (hover effekt)
-│   │   ├── Lightbox.tsx             # Teljes képernyős fotó nézet
-│   │   ├── UploadZone.tsx           # Drag & drop feltöltő
-│   │   ├── AlbumCard.tsx            # Album kártya
-│   │   ├── ShareModal.tsx           # Megosztás modal
-│   │   ├── ViberQR.tsx              # Viber bot QR kód
-│   │   ├── ThemeToggle.tsx          # Sötét/világos váltó
-│   │   └── Header.tsx               # Navigáció
-│   │
+│   │   ├── Header.tsx, Layout.tsx
+│   │   ├── PhotoGrid.tsx, PhotoCard.tsx
+│   │   ├── Lightbox.tsx                    # Fullscreen viewer + keyboard nav
+│   │   ├── UploadZone.tsx
+│   │   ├── AlbumCard.tsx, ShareModal.tsx
+│   │   └── ThemeToggle.tsx
 │   ├── hooks/
-│   │   ├── usePhotos.ts             # Fotók lekérése
-│   │   └── useUpload.ts             # Feltöltés kezelése
-│   │
-│   └── styles/
-│       └── globals.css              # Tailwind + egyedi stílusok
-│
-├── public/
-│   └── icons/                       # PWA ikonok
-│
-├── amplify.yml                      # Amplify build konfig
+│   │   ├── usePhotos.ts                    # Amplify GraphQL CRUD + S3 URL resolve
+│   │   ├── useUpload.ts                    # S3 upload + progress
+│   │   └── useTheme.ts                     # Dark/light mode
+│   ├── types/index.ts
+│   ├── data/mockData.ts
+│   ├── App.tsx                             # React Router
+│   ├── main.tsx
+│   └── index.css                           # Tailwind v4 + custom theme (vault purple)
+├── amplify.yml                             # CI/CD build config
+├── amplify_outputs.json                    # Auto-generált, .gitignore-ban
 ├── package.json
-├── tailwind.config.ts
-├── next.config.js
-└── README.md
+├── vite.config.ts
+├── index.html
+└── tsconfig.json / tsconfig.app.json / tsconfig.node.json
 ```
 
 ---
 
-## 🗄️ DynamoDB Adatmodell
+## Amplify Gen2 Backend Részletek
 
-### Photos tábla
-```
-{
-  "id": "photo_abc123",              // Partition Key
-  "userId": "user_xyz",              // GSI - felhasználónként lekérdezés
-  "albumId": "album_default",        // GSI - albumnként lekérdezés
-  "s3Key": "photos/user_xyz/photo_abc123.jpg",
-  "thumbnailKey": "thumbnails/user_xyz/photo_abc123.jpg",
-  "originalFilename": "IMG_2024.jpg",
-  "caption": "Nyári buli 🎉",
-  "tags": ["nyár", "buli", "barátok"],
-  "source": "viber",                 // "viber" | "web"
-  "width": 1920,
-  "height": 1080,
-  "fileSize": 2456789,
-  "createdAt": "2025-07-14T10:30:00Z",
-  "sortKey": "2025-07-14T10:30:00Z"  // Sort Key (időrend)
-}
-```
+### Data Model (amplify/data/resource.ts)
+- **Photo**: s3Key (required), albumId, thumbnailKey, caption, tags[], source (viber|web), width, height, fileSize
+- **Album**: name (required), description, coverPhotoId, photoCount
+- **ShareLink**: albumId (required), createdBy, expiresAt, viewCount
+- Auth: owner + publicApiKey(read)
 
-### Albums tábla
-```
-{
-  "id": "album_summer2025",
-  "userId": "user_xyz",
-  "name": "Nyár 2025 🌞",
-  "description": "A legjobb nyári pillanatok",
-  "coverPhotoId": "photo_abc123",
-  "photoCount": 42,
-  "createdAt": "2025-07-01T00:00:00Z"
-}
-```
+### Storage (amplify/storage/resource.ts)
+- `photos/{entity_id}/*` - owner RWD, guest read
+- `thumbnails/{entity_id}/*` - owner RWD, auth+guest read
+- `public/*` - guest read, auth RW
 
-### ShareLinks tábla
-```
-{
-  "id": "share_k8f2m",               // Rövid, megosztható ID
-  "albumId": "album_summer2025",
-  "createdBy": "user_xyz",
-  "expiresAt": "2025-08-14T00:00:00Z",  // Opcionális lejárat
-  "password": null,                      // Opcionális jelszó
-  "viewCount": 0,
-  "createdAt": "2025-07-14T10:30:00Z"
-}
-```
+### generateThumbnail Lambda
+- **CDK provider pattern** (nem sima defineFunction, mert sharp-hoz Lambda Layer kell)
+- `NodejsFunction` + `externalModules: ['sharp']` + `LayerVersion`
+- `resourceGroupName: 'storage'` - a cirkuláris dep elkerüléséhez
+- S3 event trigger: `photos/` prefix -> resize 400px JPEG -> `thumbnails/`
 
 ---
 
-## 🎨 "WOW" Funkciók – Amitől le fognak esni a barátaid
+## amplify.yml - CI/CD Build Config
 
-### 1. **Masonry Grid + Smooth Animációk**
-- Fotók különböző méretben, Pinterest-szerű elrendezés
-- Framer Motion animációk betöltéskor
-- Hover-re enyhe zoom + caption megjelenés
+```yaml
+version: 1
+backend:
+  phases:
+    preBuild:
+      commands:
+        - nvm install 22
+        - npm ci
+        - mkdir -p amplify/layers/sharp/nodejs
+        - (cd amplify/layers/sharp/nodejs && npm init -y && npm install --platform=linux --arch=x64 sharp@0.33.0)
+    build:
+      commands:
+        - npx ampx pipeline-deploy --branch $AWS_BRANCH --app-id $AWS_APP_ID
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - nvm install 22
+        - rm -rf node_modules package-lock.json
+        - npm install
+    build:
+      commands:
+        - npm run build
+  artifacts:
+    baseDirectory: dist
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - .npm/**/*
+```
 
-### 2. **Viber Bot Integráció**
-- Küldj fotót a botnak → azonnal megjelenik a galériában
-- A bot visszaküld egy linket a galériához
-- "Melyik albumba tegyem?" – interaktív gombok
-
-### 3. **Instant Megosztás**
-- Egy kattintás → megosztható link generálás
-- Gyönyörű publikus galéria oldal (nem kell bejelentkezés)
-- QR kód generálás a linkhez
-
-### 4. **Sötét/Világos Téma**
-- Elegáns dark mode (alapértelmezett)
-- Smooth átmenet a két téma között
-
-### 5. **Drag & Drop Upload**
-- Húzd rá a fotókat → azonnali előnézet
-- Progress bar animáció
-- Többszörös feltöltés egyszerre
-
-### 6. **CloudFront CDN**
-- Villámgyors képbetöltés bárhonnan a világon
-- Automatikus thumbnail generálás
+### Build trükkök / tanulságok:
+1. **Sharp Lambda Layer**: `npm install --platform=linux --arch=x64` cross-compile macOS-ről
+2. **Subshell `(cd ...)`**: a `cd` ne változtassa meg a working directory-t az ampx előtt
+3. **`rm -rf node_modules package-lock.json`**: a rollup native module (`@rollup/rollup-linux-x64-gnu`) nem települ `npm ci`-vel ha a lockfile macOS-en készült
+4. **Node 22 LTS**: a deps (aws-sdk, vite, react-router) mind >=20-t kérnek, Node 22 LTS 2027 áprilisig él
+5. **Platform `WEB`** (nem `WEB_COMPUTE`!): statikus Vite SPA, nincs SSR, nincs `deploy-manifest.json`
+6. **`npm ci` a backend preBuild-ben**: az `ampx` CLI elérhető legyen a build phase-ben
 
 ---
 
-## 🚀 Deploy Pipeline
+## Ami kész
 
-```
-GitHub Push → Amplify Auto-Build → Live Site
-    │
-    ├── Frontend: Next.js build → Amplify Hosting
-    ├── Backend: Lambda deploy
-    ├── Storage: S3 bucket
-    └── Database: DynamoDB táblák
-```
+- Frontend: teljes galéria UI (masonry grid, lightbox, upload, albumok, share, dark/light theme)
+- Backend: Auth (Cognito), Data (AppSync+DynamoDB), Storage (S3), Lambda (thumbnail)
+- CI/CD: GitHub -> Amplify auto-build (backend + frontend)
+- IAM: AmplifyBackendDeployRole service role
 
----
+## Ami hiányzik / TODO
 
-## 📋 Claude CLI-nek adandó prompt
-
-Amikor feltelepítetted a Claude CLI-t, ezt a promptot add neki:
-
-```
-Hozz létre egy "PhotoVault" nevű fotókezelő webalkalmaz
+- [ ] Viber bot webhook (processViberMessage Lambda)
+- [ ] Album létrehozás UI handler
+- [ ] Share link lejárat kezelés
+- [ ] Share link view count frissítés
+- [ ] CloudFront CDN képekhez
+- [ ] ViberQR komponens implementálás
+- [ ] PWA support
